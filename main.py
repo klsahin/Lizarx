@@ -66,17 +66,17 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_SPACE]:
-            lizard.turn(False, False, False, False, screen, leaves, tree)
-        elif keys[pygame.K_u]:
-            lizard.turn(False, True, False, False, screen, leaves, tree)
-        elif keys[pygame.K_h]:
-            lizard.turn(True, True, False, False, screen, leaves, tree)
-        elif keys[pygame.K_i]:
-            lizard.turn(False, False, True, False, screen, leaves, tree)
-        elif keys[pygame.K_l]:
-            lizard.turn(False, False, True, True, screen, leaves, tree)
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_SPACE]:
+        lizard.turn(False, False, False, False, screen, leaves, tree)
+    elif keys[pygame.K_u]:
+        lizard.turn(False, True, False, False, screen, leaves, tree)
+    elif keys[pygame.K_h]:
+        lizard.turn(True, True, False, False, screen, leaves, tree)
+    elif keys[pygame.K_i]:
+        lizard.turn(False, False, True, False, screen, leaves, tree)
+    elif keys[pygame.K_l]:
+        lizard.turn(False, False, True, True, screen, leaves, tree)
 
 
     draw_objects()  # Call the function to draw objects

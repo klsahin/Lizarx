@@ -58,19 +58,7 @@ class Lizard:
         self.image = pygame.transform.scale(self.image, self.size)
         self.image = pygame.transform.flip(self.image, self.flip, False)
     
-    def run(self, screen, leaves, tree):
-        #straight movement
-        for frame in range(1,7):
-            dy = 10
-            leaves.draw(screen)
-            # tree.scroll(dy)
-            tree.draw(screen)
-            self.path = f'assets/straight/S{frame}.png'
-            self.load_image()
-            screen.blit(self.image, self.position)
-            pygame.display.flip()
-            pygame.time.wait(100)
-
+    
         
     
     def turn(self, farLeft, topLeft, topRight, farRight, screen, leaves, tree):
@@ -128,6 +116,12 @@ class Lizard:
             leaves.draw(screen)
             #tree.scroll(dy)
             tree.draw(screen)
+
+            if (self.position[0] < 80 and dx < 0) or (self.position[0] > 480 and dx > 0):
+                direction = "straight/S"
+                dx = 0
+                dy = 5
+                self.flip = False
 
             #update lizard position and image
             self.path = f'assets/{direction}{frame}.png'
