@@ -63,28 +63,44 @@ while running:
 
 
     try:
-        serialCom.flushInput()  # Clear the input buffer
-        s_bytes = serialCom.readline()
-        decoded_bytes = s_bytes.decode("utf-8").strip('\r\n')
-        print(f"decoded bytes: {decoded_bytes}")
-        farLeftData = []
-        topLeftData = []
-        topRightData = []
-        farRightData = []
-        count = 0
+        if arduino:
+            serialCom.flushInput()  # Clear the input buffer
+            s_bytes = serialCom.readline()
+            decoded_bytes = s_bytes.decode("utf-8").strip('\r\n')
+            print(f"decoded bytes: {decoded_bytes}")
+            farLeftData = []
+            topLeftData = []
+            topRightData = []
+            farRightData = []
+            count = 0
 
-        # Split the data by commas and store in leftData and rightData
-        for data in decoded_bytes.split(","):
-            if count < 2:
-                farLeftData.append(data)
-            elif count < 4:
-                topLeftData.append(data)
-            elif count < 6:
-                topRightData.append(data)
-            elif count < 8:
-                farRightData.append(data)
+            # Split the data by commas and store in leftData and rightData
+            for data in decoded_bytes.split(","):
+                if count < 2:
+                    farLeftData.append(data)
+                elif count < 4:
+                    topLeftData.append(data)
+                elif count < 6:
+                    topRightData.append(data)
+                elif count < 8:
+                    farRightData.append(data)
 
-            count += 1
+                count += 1
+        else: # Simulate data with. H, U, I, L keys
+            for key in pygame.key.get_pressed():
+                if key == pygame.K_h:
+                    farLeftData = [2000,2000]
+                elif key == pygame.K_u:
+                    topLeftData = [2000,2000]
+                elif key == pygame.K_i:
+                    topRightData = [2000,2000]
+                elif key == pygame.K_l:
+                    farRightData = [2000,2000]
+                else:
+                    farLeftData = [0, 0]
+                    topLeftData = [0, 0]
+                    topRightData = [0, 0]
+                    farRightData = [0, 0]
         
         farLeftTurn = False
         topLeftTurn = False
@@ -93,16 +109,16 @@ while running:
 
         # Turning Logic
         for data in farLeftData:
-            if int(data):
+            if int(data) > 1500:
                 farLeftTurn = True
         for data in topLeftData:
-            if int(data):
+            if int(data)  > 1500:
                 topLeftTurn = True
         for data in topRightData:
-            if int(data):
+            if int(data)  > 1500:
                 topRightTurn = True
         for data in farRightData:
-            if int(data):
+            if int(data)  > 1500:
                 farRightTurn = True
         
         lizard.turn(farLeftTurn, topLeftTurn, topRightTurn, farRightTurn, screen, background)
