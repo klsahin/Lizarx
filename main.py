@@ -74,13 +74,13 @@ while running:
 
     keys = pygame.key.get_pressed()
     
-    if keys[pygame.K_u]:
+    if keys[pygame.K_w]:
         lizard.turn(False, True, False, False, screen, leaves, tree)
-    elif keys[pygame.K_h]:
+    elif keys[pygame.K_a]:
         lizard.turn(True, True, False, False, screen, leaves, tree)
-    elif keys[pygame.K_i]:
+    elif keys[pygame.K_s]:
         lizard.turn(False, False, True, False, screen, leaves, tree)
-    elif keys[pygame.K_l]:
+    elif keys[pygame.K_d]:
         lizard.turn(False, False, True, True, screen, leaves, tree)
     else:
         lizard.turn(False, False, False, False, screen, leaves, tree)
