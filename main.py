@@ -50,7 +50,7 @@ running = True
 leaves = Leaves(screenWidth, screenHeight)
 tree = Tree(screenWidth,screenHeight)
 tree.load_image()
-lizard = Lizard(300, 500, 200, 300, 1)  # Example parameters for lizard
+lizard = Lizard(300, 400, 260, 390, 1)  # Example parameters for lizard
 lizard.load_image()
 
 # draw all objects
@@ -61,15 +61,20 @@ def draw_objects():
     #draw lizard
     screen.blit(lizard.image, lizard.position)
 
+#def checkKeys():
+    
 
 while running:
+
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_SPACE]:
-        lizard.turn(False, False, False, False, screen, leaves, tree)
-    elif keys[pygame.K_u]:
+    
+    if keys[pygame.K_u]:
         lizard.turn(False, True, False, False, screen, leaves, tree)
     elif keys[pygame.K_h]:
         lizard.turn(True, True, False, False, screen, leaves, tree)
@@ -77,6 +82,8 @@ while running:
         lizard.turn(False, False, True, False, screen, leaves, tree)
     elif keys[pygame.K_l]:
         lizard.turn(False, False, True, True, screen, leaves, tree)
+    else:
+        lizard.turn(False, False, False, False, screen, leaves, tree)
 
 
     draw_objects()  # Call the function to draw objects
