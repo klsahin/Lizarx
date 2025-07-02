@@ -109,13 +109,13 @@ class Lizard:
         if self.animating and now - self.last_update > self.animation_speed:
             self.last_update = now
             # Move lizard
-            if (self.position[0] < 80 and self.dx < 0) or (self.position[0] > 480 and self.dx > 0):
+            if (self.position[0] < 40 and self.dx < 0) or (self.position[0] > 450 and self.dx > 0):
                 self.direction = "straight/S"
                 self.dx = 0
                 self.dy = 5
                 self.flip = False
             self.path = f'assets/{self.direction}{self.frame}.png'
-            self.position[0] += self.dx // 5
+            self.position[0] += self.dx
             self.load_image()
             self.frame += 1
             if self.frame > self.frame_count:

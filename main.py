@@ -60,15 +60,9 @@ def draw_objects():
     tree.draw(screen)
     # lizard drawing is now handled in lizard.update()
 
-#def checkKeys():
-
 prev_input = (False, False, False, False)
 
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
+def checkKeys(prev_input):
     keys = pygame.key.get_pressed()
     input_tuple = (
         keys[pygame.K_a] or keys[pygame.K_h],  # farLeft
@@ -79,6 +73,15 @@ while running:
     if input_tuple != prev_input:
         lizard.set_direction(*input_tuple)
         prev_input = input_tuple
+    return prev_input
+
+
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    prev_input = checkKeys(prev_input)
 
     leaves.draw(screen)
     tree.scroll(4)
