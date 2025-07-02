@@ -137,13 +137,14 @@ class Fruit:
         self.position = [self.x, self.y]
         self.size = [width, height]
         self.index = index
-        self.image = None 
+        self.image = None
         self.path = f"assets/fruits/f{self.index}.png"
         #self.dimensions = [self.y, self.y + self.height, self.x, self.x + self.width]
 
     def load_image(self, screen):
         self.image = pygame.image.load(self.path).convert_alpha()
-        self.image = pygame.transform.scale(self.image, self.size)
+        if self.size[0] is not None and self.size[1] is not None:
+            self.image = pygame.transform.scale(self.image, self.size)
         screen.blit(self.image, self.position)
 
 class Obstacle:
@@ -154,7 +155,7 @@ class Obstacle:
         self.height = height
         self.position = [self.x, self.y]
         self.size = [width, height]
-        self.image = None 
+        self.image = None
         self.path = f"assets/bomb.png"
         #self.dimensions = [self.y, self.y + self.height, self.x, self.x + self.width]    #top, bottom, left, right
 
@@ -162,4 +163,3 @@ class Obstacle:
         self.image = pygame.image.load(self.path).convert_alpha()
         self.image = pygame.transform.scale(self.image, self.size)
         screen.blit(self.image, self.position)
-
