@@ -56,6 +56,7 @@ class Lizard:
         self.animation_timer = 0
         self.animation_speed = 100  # ms per frame (slower)
         self.last_update = pygame.time.get_ticks()
+        self.slow = 0
 
     def load_image(self):
         self.image = pygame.image.load(self.path).convert_alpha()
@@ -117,9 +118,12 @@ class Lizard:
             self.path = f'assets/{self.direction}{self.frame}.png'
             self.position[0] += self.dx
             self.load_image()
-            self.frame += 1
+            if self.slow % 2 == 0:
+                self.frame += 1
+            self.slow += 1
             if self.frame > self.frame_count:
                 self.frame = 1
+                self.slow = 0
                 # Always keep animating as long as a direction is held
         # Draw lizard
         screen.blit(self.image, self.position)

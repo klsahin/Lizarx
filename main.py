@@ -1,8 +1,8 @@
 import pygame
 from classes import *
 import random
-arduino = False
-'''
+arduino = True
+
 # ARDUINO SETUP
 import serial
 import serial.tools.list_ports
@@ -36,7 +36,7 @@ if arduino:
     dataVariable = 0
 
 
-'''
+
 
 screenWidth = 700
 screenHeight = 800
@@ -70,98 +70,85 @@ def checkKeys(prev_input):
         keys[pygame.K_s] or keys[pygame.K_i],  # topRight
         keys[pygame.K_d] or keys[pygame.K_l],  # farRight
     )
-    if input_tuple != prev_input:
-        lizard.set_direction(*input_tuple)
-        prev_input = input_tuple
-    return prev_input
-
+    
+start = True
 
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-    prev_input = checkKeys(prev_input)
+    #prev_input = checkKeys(prev_input)
 
-    leaves.draw(screen)
-    tree.scroll(4)
-    tree.draw(screen)
-    lizard.update(screen, leaves, tree)
-    pygame.display.flip()
-
-"""
     try:
-
         if arduino:
-            pass
-            # serialCom.flushInput()  # Clear the input buffer
-            # s_bytes = serialCom.readline()
-            # decoded_bytes = s_bytes.decode("utf-8").strip('\r\n')
-            # print(f"decoded bytes: {decoded_bytes}")
-            # farLeftData = []
-            # topLeftData = []
-            # topRightData = []
-            # farRightData = []
-            # count = 0
+            serialCom.flushInput()  # Clear the input buffer
+            s_bytes = serialCom.readline()
+            decoded_bytes = s_bytes.decode("utf-8").strip('\r\n')
+            print(f"decoded bytes: {decoded_bytes}")
+            farLeftData = []
+            topLeftData = []
+            topRightData = []
+            farRightData = []
+            
+            count = 0
+            # Split the data by commas and store in leftData and rightData
+            for data in decoded_bytes.split(","):
+                if count < 2:
+                    farLeftData.append(data)
+                elif count < 4:
+                    topLeftData.append(data)
+                elif count < 6:
+                    topRightData.append(data)
+                elif count < 8:
+                    farRightData.append(data)
+                count += 1
 
-            # # Split the data by commas and store in leftData and rightData
-            # for data in decoded_bytes.split(","):
-            #     if count < 2:
-            #         farLeftData.append(data)
-            #     elif count < 4:
-            #         topLeftData.append(data)
-            #     elif count < 6:
-            #         topRightData.append(data)
-            #     elif count < 8:
-            #         farRightData.append(data)
-
-            #     count += 1
-        else: # Simulate data with. H, U, I, L keys
-            complete = False
-            for key in pygame.key.get_pressed():
-                if key == pygame.K_h:
-                    farLeftData = [2000,2000]
-                elif key == pygame.K_u:
-                    topLeftData = [2000,2000]
-                elif key == pygame.K_i:
-                    topRightData = [2000,2000]
-                elif key == pygame.K_l:
-                    farRightData = [2000,2000]
-                complete = True
-            if not complete:
-                farLeftData = [0, 0]
-                topLeftData = [0, 0]
-                topRightData = [0, 0]
-                farRightData = [0, 0]
 
         farLeftTurn = False
         topLeftTurn = False
         topRightTurn = False
         farRightTurn = False
+        
 
         # Turning Logic
-        for data in farLeftData:
-            if int(data) > 1500:
-                farLeftTurn = True
-        for data in topLeftData:
-            if int(data)  > 1500:
-                topLeftTurn = True
-        for data in topRightData:
-            if int(data)  > 1500:
-                topRightTurn = True
-        for data in farRightData:
-            if int(data)  > 1500:
-                farRightTurn = True
+        threshold = 2000
+        if int(farLeftData[0]) > threshold and int(farLeftData[1]) > threshold:
+            farLeftTurn = True
+        if int(topLeftData[0]) > 3000 and int(topLeftData[1]) > threshold:
+            topLeftTurn = True
+        if int(topRightData[0]) > threshold and int(topRightData[1]) > threshold:
+            topRightTurn = True
+        if int(farRightData[0]) > threshold and int(farRightData[1]) > threshold:
+            farRightTurn = True
+        
+        
+        input_tuple = (farLeftTurn, topLeftTurn, topRightTurn, farRightTurn)
+        if input_tuple != (False, False, False, False):
+            start = False
 
-        lizard.turn(farLeftTurn, topLeftTurn, topRightTurn, farRightTurn, screen, background)
-        pygame.time.delay(100)  # Delay to control the speed of the loop
+        if input_tuple != prev_input or start == True:
+            lizard.set_direction(*input_tuple)
+            prev_input = input_tuple
+    
+
+        leaves.draw(screen)
+        tree.scroll(11)
+        tree.draw(screen)
+        lizard.update(screen, leaves, tree)
+        pygame.display.flip()
+
+        
+
+        #lizard.turn(farLeftTurn, topLeftTurn, topRightTurn, farRightTurn, screen, background)
+        #pygame.time.delay(100)  # Delay to control the speed of the loop
 
     except:
         print("Error reading data from serial port")
         farLeftTurn = topLeftTurn = topRightTurn = farRightTurn = False
 
-     """
+     
 
 
 pygame.quit()
-# f.close()  # Close the CSV file
+f.close()  # Close the CSV file
