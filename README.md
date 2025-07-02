@@ -28,4 +28,4 @@ python main.py
 
 ## Credits
 
-Made by Karla Sahin and Dingning Cao :D
+Made by Karla Sahin and Dingning Cao for Jiaji Li and Mingming Li
