@@ -58,40 +58,37 @@ def draw_objects():
     #draw background
     leaves.draw(screen)
     tree.draw(screen)
-    #draw lizard
-    screen.blit(lizard.image, lizard.position)
+    # lizard drawing is now handled in lizard.update()
 
 #def checkKeys():
-    
+
+prev_input = (False, False, False, False)
 
 while running:
-
-    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-
     keys = pygame.key.get_pressed()
-    
-    if keys[pygame.K_w]:
-        lizard.turn(False, True, False, False, screen, leaves, tree)
-    elif keys[pygame.K_a]:
-        lizard.turn(True, True, False, False, screen, leaves, tree)
-    elif keys[pygame.K_s]:
-        lizard.turn(False, False, True, False, screen, leaves, tree)
-    elif keys[pygame.K_d]:
-        lizard.turn(False, False, True, True, screen, leaves, tree)
-    else:
-        lizard.turn(False, False, False, False, screen, leaves, tree)
+    input_tuple = (
+        keys[pygame.K_a] or keys[pygame.K_h],  # farLeft
+        keys[pygame.K_w] or keys[pygame.K_u],  # topLeft
+        keys[pygame.K_s] or keys[pygame.K_i],  # topRight
+        keys[pygame.K_d] or keys[pygame.K_l],  # farRight
+    )
+    if input_tuple != prev_input:
+        lizard.set_direction(*input_tuple)
+        prev_input = input_tuple
 
+    leaves.draw(screen)
+    tree.scroll(4)
+    tree.draw(screen)
+    lizard.update(screen, leaves, tree)
+    pygame.display.flip()
 
-    draw_objects()  # Call the function to draw objects
-    pygame.display.flip()  # Update the display
-
-""" 
+"""
     try:
-        
+
         if arduino:
             pass
             # serialCom.flushInput()  # Clear the input buffer
@@ -133,7 +130,7 @@ while running:
                 topLeftData = [0, 0]
                 topRightData = [0, 0]
                 farRightData = [0, 0]
-        
+
         farLeftTurn = False
         topLeftTurn = False
         topRightTurn = False
@@ -152,16 +149,16 @@ while running:
         for data in farRightData:
             if int(data)  > 1500:
                 farRightTurn = True
-        
+
         lizard.turn(farLeftTurn, topLeftTurn, topRightTurn, farRightTurn, screen, background)
-        pygame.time.delay(100)  # Delay to control the speed of the loop    
+        pygame.time.delay(100)  # Delay to control the speed of the loop
 
     except:
         print("Error reading data from serial port")
         farLeftTurn = topLeftTurn = topRightTurn = farRightTurn = False
-        
+
      """
-    
+
 
 pygame.quit()
-f.close()  # Close the CSV file
+# f.close()  # Close the CSV file
