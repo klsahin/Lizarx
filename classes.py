@@ -163,3 +163,29 @@ class Obstacle:
         if self.size[0] is not None and self.size[1] is not None:
             self.image = pygame.transform.scale(self.image, self.size)
         screen.blit(self.image, self.position)
+
+class FloatingText:
+    def __init__(self, x, y, text, color, font_path, font_size=48, fade_speed=8):
+        self.x = x
+        self.y = y
+        self.text = text
+        self.color = color
+        self.alpha = 255
+        self.fade_speed = fade_speed
+        self.font = pygame.font.Font(font_path, font_size)
+        self.image = self.font.render(self.text, True, self.color)
+        self.rect = self.image.get_rect(center=(self.x, self.y))
+
+    def update(self):
+        self.y -= 2  # Move up
+        self.alpha -= self.fade_speed  # Fade out
+        if self.alpha < 0:
+            self.alpha = 0
+        self.image.set_alpha(self.alpha)
+        self.rect = self.image.get_rect(center=(self.x, self.y))
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+
+    def is_dead(self):
+        return self.alpha == 0

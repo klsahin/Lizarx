@@ -2,7 +2,7 @@ import pygame
 from classes import *
 import random
 
-arduino = True  # Set to True to use Arduino, False to use keyboard
+arduino = False  # Set to True to use Arduino, False to use keyboard
 
 if arduino:
     import serial
@@ -67,7 +67,7 @@ def spawn_single_object():
         return Fruit(lane_x[lane], object_spawn_y, object_width, object_height, fruit_type)
     else:
         return Obstacle(lane_x[lane], object_spawn_y, object_width, object_height)
-    
+
 
 #active_objects.append(spawn_single_object())
 
@@ -88,6 +88,8 @@ font_color = (187, 220, 5)  # #bbdc05 green
 
 speed = 11
 
+floating_texts = []  # List to store active floating texts
+
 def collisionDetection(objectsOnScreen):
     if objectsOnScreen == []: return None
     [lx, ly] = lizard.position
@@ -104,7 +106,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    if score > 0: 
+    if score > 0:
         screen_speed = int(speed * (1 + score/100))
     else:
         screen_speed = speed
@@ -178,6 +180,13 @@ while running:
             if objectsOnScreen[-1].y > vertical_spacing:
                     objectsOnScreen.append(spawn_single_object())
 
+        # Draw and update floating texts
+        for text in floating_texts[:]:
+            text.update()
+            text.draw(screen)
+            if text.is_dead():
+                floating_texts.remove(text)
+
         pygame.display.flip()
 
         # Collision detection
@@ -187,14 +196,31 @@ while running:
             if isinstance(collided, Fruit):
                 score += 5
                 if collided in objectsOnScreen: objectsOnScreen.remove(collided)
-                # objectsOnScreen.append(spawn_single_object())
+                # Add floating +5 text
+                floating_texts.append(FloatingText(
+                    collided.x + collided.width // 2,
+                    collided.y - 20,
+                    "+5",
+                    (187, 220, 5),  # green
+                    font_path,
+                    60,
+                    12
+                ))
             elif isinstance(collided, Obstacle):
                 score -= 10
                 if collided in objectsOnScreen: objectsOnScreen.remove(collided)
-                # objectsOnScreen.append(spawn_single_object())
+                # Add floating -10 text
+                floating_texts.append(FloatingText(
+                    collided.x + collided.width // 2,
+                    collided.y - 20,
+                    "-10",
+                    (220, 30, 30),  # red
+                    font_path,
+                    60,
+                    12
+                ))
             # If you add obstacles, handle them here
 
-    
     except:
         print("Error")
         farLeftTurn = topLeftTurn = topRightTurn = farRightTurn = False
