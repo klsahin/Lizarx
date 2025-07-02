@@ -2,7 +2,7 @@ import pygame
 from classes import *
 import random
 
-arduino = False  # Set to True to use Arduino, False to use keyboard
+arduino = True  # Set to True to use Arduino, False to use keyboard
 
 if arduino:
     import serial
