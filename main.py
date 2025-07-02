@@ -72,6 +72,23 @@ def checkKeys(prev_input):
     )
     
 start = True
+score = 0
+objectsOnScreen = []
+
+font_path = 'assets/SuperBubble.ttf'
+font = pygame.font.Font(font_path, 64)  # Adjust size as needed
+font_color = (255, 140, 0)
+
+
+def collisionDetection(objectsOnScreen):
+    if objectsOnScreen == []: return None
+    x_overlap = False
+    y_overlap = False
+    for object in (objectsOnScreen):
+        x_overlap = (lizard.x < object.x + object.width and lizard.x + lizard.width > object.x)
+        y_overlap = (lizard.y < object.y + object.height and lizard.y + lizard.height > object.y)
+        if x_overlap and y_overlap:
+            return str(object)
 
 while running:
     for event in pygame.event.get():
@@ -135,10 +152,19 @@ while running:
         leaves.draw(screen)
         tree.scroll(11)
         tree.draw(screen)
+        score_text = font.render(str(score), True, font_color)
+        screen.blit(score_text, (40,30))
         lizard.update(screen, leaves, tree)
         pygame.display.flip()
 
-        
+        if collisionDetection(objectsOnScreen) == "fruit":
+            score += 5
+            # something good happens
+        elif collisionDetection(objectsOnScreen) == "obstacle":
+            score -= 5
+            # something bad happens
+
+
 
         #lizard.turn(farLeftTurn, topLeftTurn, topRightTurn, farRightTurn, screen, background)
         #pygame.time.delay(100)  # Delay to control the speed of the loop

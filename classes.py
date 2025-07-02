@@ -57,7 +57,7 @@ class Lizard:
         self.animation_timer = 0
         self.animation_speed = 100  # ms per frame (slower)
         self.last_update = pygame.time.get_ticks()
-        self.dimensions = [self.y, self.y + self.height, self.x, self.x + self.width]
+        #self.dimensions = [self.y, self.y + self.height, self.x, self.x + self.width]
 
 
     def load_image(self):
@@ -139,7 +139,7 @@ class Fruit:
         self.index = index
         self.image = None 
         self.path = f"assets/fruits/f{self.index}.png"
-        self.dimensions = [self.y, self.y + self.height, self.x, self.x + self.width]
+        #self.dimensions = [self.y, self.y + self.height, self.x, self.x + self.width]
 
     def load_image(self, screen):
         self.image = pygame.image.load(self.path).convert_alpha()
@@ -156,7 +156,7 @@ class Obstacle:
         self.size = [width, height]
         self.image = None 
         self.path = f"assets/bomb.png"
-        self.dimensions = [self.y, self.y + self.height, self.x, self.x + self.width]    #top, bottom, left, right
+        #self.dimensions = [self.y, self.y + self.height, self.x, self.x + self.width]    #top, bottom, left, right
 
     def load_image(self, screen):
         self.image = pygame.image.load(self.path).convert_alpha()
