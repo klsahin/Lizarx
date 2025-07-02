@@ -157,9 +157,9 @@ class Obstacle:
         self.size = [width, height]
         self.image = None
         self.path = f"assets/bomb.png"
-        #self.dimensions = [self.y, self.y + self.height, self.x, self.x + self.width]    #top, bottom, left, right
 
     def load_image(self, screen):
         self.image = pygame.image.load(self.path).convert_alpha()
-        self.image = pygame.transform.scale(self.image, self.size)
+        if self.size[0] is not None and self.size[1] is not None:
+            self.image = pygame.transform.scale(self.image, self.size)
         screen.blit(self.image, self.position)

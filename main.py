@@ -2,7 +2,7 @@ import pygame
 from classes import *
 import random
 
-arduino = False  # Set to True to use Arduino, False to use keyboard
+arduino = True  # Set to True to use Arduino, False to use keyboard
 
 if arduino:
     import serial
@@ -48,21 +48,28 @@ lizard.load_image()
 
 # Lane positions for fruit (divide crawlable path into 3 lanes)
 lane_x = [160 + 15, 300 + 15, 440 + 15]  # Shift all lanes 15 pixels to the right
-fruit_width = 75
-fruit_height = 75
-fruit_spawn_y = -80  # Start just above the screen
+object_width = 75
+object_height = 75
+object_spawn_y = -80  # Start just above the screen
 fruits = []
-max_fruits = 3
+num_objects = 5
+vertical_spacing = screenHeight // num_objects
 
 # Only one fruit at a time, randomly in one of the three lanes
-active_fruit = None
+active_objects = []
 
-def spawn_single_fruit():
+def spawn_single_object():
+    objectList = ["Fruit"] * 3 + ["Obstacle"] * 1
+    object = random.choice(objectList)
     lane = random.choice([0, 1, 2])
-    fruit_type = random.randint(1, 3)
-    return Fruit(lane_x[lane], fruit_spawn_y, fruit_width, fruit_height, fruit_type)
+    if object == "Fruit":
+        fruit_type = random.randint(1, 3)
+        return Fruit(lane_x[lane], object_spawn_y, object_width, object_height, fruit_type)
+    else:
+        return Obstacle(lane_x[lane], object_spawn_y, object_width, object_height)
+    
 
-active_fruit = spawn_single_fruit()
+#active_objects.append(spawn_single_object())
 
 def draw_objects():
     leaves.draw(screen)
@@ -73,26 +80,34 @@ prev_input = (False, False, False, False)
 start = True
 score = 0
 objectsOnScreen = []
+objectsOnScreen.append(spawn_single_object()) #initial object
 
 font_path = 'assets/SuperBubble.ttf'
 font = pygame.font.Font(font_path, 64)  # Adjust size as needed
 font_color = (187, 220, 5)  # #bbdc05 green
 
+speed = 11
 
 def collisionDetection(objectsOnScreen):
     if objectsOnScreen == []: return None
-    x_overlap = False
-    y_overlap = False
+    [lx, ly] = lizard.position
+    ygap = 25 # offset for lizard image
+    xgap = 75
     for object in (objectsOnScreen):
-        x_overlap = (lizard.x < object.x + object.width and lizard.x + lizard.width > object.x)
-        y_overlap = (lizard.y < object.y + object.height and lizard.y + lizard.height > object.y)
+        x_overlap = (lx + xgap < object.x + object.width and lx + lizard.width  - xgap > object.x)
+        y_overlap = (ly + ygap < object.y + object.height and ly + lizard.height - ygap> object.y)
         if x_overlap and y_overlap:
-            return str(object)
+            return object
 
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+    if score > 0: 
+        screen_speed = int(speed * (1 + score/100))
+    else:
+        screen_speed = speed
 
     try:
         if arduino:
@@ -137,27 +152,31 @@ while running:
                 keys[pygame.K_s] or keys[pygame.K_i],  # topRight
                 keys[pygame.K_d] or keys[pygame.K_l],  # farRight
             )
+
         if input_tuple != (False, False, False, False):
             start = False
         if input_tuple != prev_input or start == True:
             lizard.set_direction(*input_tuple)
             prev_input = input_tuple
         leaves.draw(screen)
-        tree.scroll(11)
+        tree.scroll(screen_speed)
         tree.draw(screen)
         score_text = font.render(str(score), True, font_color)
         screen.blit(score_text, (20, 20))
         lizard.update(screen, leaves, tree)
 
         # Move and draw the single fruit
-        objectsOnScreen = []
-        if active_fruit:
-            active_fruit.y += 11  # Move down with the tree scroll speed
-            active_fruit.position[1] = active_fruit.y
-            active_fruit.load_image(screen)
-            objectsOnScreen.append(active_fruit)
-            if active_fruit.y > screenHeight:
-                active_fruit = spawn_single_fruit()
+        #objectsOnScreen = []
+        if objectsOnScreen != []:
+            for obj in objectsOnScreen:
+                obj.y += screen_speed  # Move down with the tree scroll speed
+                obj.position[1] = obj.y
+                obj.load_image(screen)
+                #objectsOnScreen.append(obj)
+                # if obj.y > screenHeight:
+                #     objectsOnScreen.append(spawn_single_object())
+            if objectsOnScreen[-1].y > vertical_spacing:
+                    objectsOnScreen.append(spawn_single_object())
 
         pygame.display.flip()
 
@@ -165,16 +184,19 @@ while running:
         collided = collisionDetection(objectsOnScreen)
         if collided is not None:
             # Check if the collided object is a fruit
-            if isinstance(active_fruit, Fruit) and collided == str(active_fruit):
+            if isinstance(collided, Fruit):
                 score += 5
-                active_fruit = spawn_single_fruit()
+                if collided in objectsOnScreen: objectsOnScreen.remove(collided)
+                # objectsOnScreen.append(spawn_single_object())
+            elif isinstance(collided, Obstacle):
+                score -= 10
+                if collided in objectsOnScreen: objectsOnScreen.remove(collided)
+                # objectsOnScreen.append(spawn_single_object())
             # If you add obstacles, handle them here
 
-        #lizard.turn(farLeftTurn, topLeftTurn, topRightTurn, farRightTurn, screen, background)
-        #pygame.time.delay(100)  # Delay to control the speed of the loop
-
+    
     except:
-        print("Error reading data from serial port")
+        print("Error")
         farLeftTurn = topLeftTurn = topRightTurn = farRightTurn = False
 
 if arduino:
